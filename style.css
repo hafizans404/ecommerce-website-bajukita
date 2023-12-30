@@ -260,3 +260,8 @@ cursor: pointer;
         width: 280px;
     }
 }
+
+.cart-content {
+    max-height: 300px; /* Adjust the value based on your design */
+    overflow-y: auto;
+  }

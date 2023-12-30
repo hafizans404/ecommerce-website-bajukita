@@ -72,7 +72,7 @@ function quantityChanged(event) {
 updatetotal();
 }
 
-let cartShopBox;
+let cartCounter = 0;
 
 // Add To Cart
 function addcartcliked(event) {
@@ -81,15 +81,27 @@ function addcartcliked(event) {
   const title = shopProducts.getElementsByClassName("product-title")[0].innerText;
   const price = shopProducts.getElementsByClassName("price")[0].innerText;
   const productImg = shopProducts.getElementsByClassName("product-img")[0].src;
+
   cartShopBox = addProductToCart(title, price, productImg);
+  if (cartShopBox) {
+    cartCounter++;
+    updateCartCounter();
+  }
   updatetotal();
+}
+
+function updateCartCounter() {
+  const cartCounterSpan = document.getElementById("cart-counter");
+  if (cartCounterSpan) {
+    cartCounterSpan.innerText = cartCounter;
+  }
 }
 
 function addProductToCart(title, price, productImg) {
   const newCartShopBox = document.createElement("div");
   newCartShopBox.classList.add("cart-box");
 
-  const cartItems = document.getElementsByClassName("cart-content")[0];
+  const cartItems = document.querySelector(".cart-content");
   const cartItemsNames = cartItems.getElementsByClassName("cart-product-title");
 
   for (let i = 0; i < cartItemsNames.length; i++) {
@@ -109,11 +121,14 @@ function addProductToCart(title, price, productImg) {
     <!-- Remove Cart -->
     <i class='bx bxs-trash-alt cart-remove'></i>
   `;
+
   newCartShopBox.innerHTML = cartBoxContent;
   cartItems.append(newCartShopBox);
+
   newCartShopBox
     .getElementsByClassName("cart-remove")[0]
     .addEventListener("click", removeCartItem);
+
   newCartShopBox
     .getElementsByClassName("cart-quantity")[0]
     .addEventListener("change", quantityChanged);
@@ -125,6 +140,8 @@ function addProductToCart(title, price, productImg) {
 function removeCartItem(event) {
   const buttonClicked = event.target;
   buttonClicked.parentElement.remove();
+  cartCounter--;
+  updateCartCounter();
   updatetotal();
 }
 
