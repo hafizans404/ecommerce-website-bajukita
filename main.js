@@ -2,13 +2,18 @@
 let carticon = document.querySelector("#cart-icon");
 let cart = document.querySelector(".cart");
 let closecart = document.querySelector("#close-cart");
+
 // Open Cart
 carticon.onclick = () => {
-    cart.classList.add("active");
+  cart.classList.add("active");
+  hideCartCount(); 
+  updateCartCounter();
 };
+
 // Close Cart
 closecart.onclick = () => {
-    cart.classList.remove("active");
+  cart.classList.remove("active");
+  showCartCount(); 
 };
 
 // Cart Working Js
@@ -25,7 +30,7 @@ function ready(){
  console.log(removeCartButtons)
  for (var i = 0; i <removeCartButtons.length; i++){
     var button = removeCartButtons[i]
-    button.addEventListener("click", removeCartItems);
+    button.addEventListener("click", removeCartItem);
 
 
  }
@@ -46,29 +51,30 @@ for (var i = 0; i < addcart.length; i++){
   .getElementsByClassName("btn-buy")[0]
   .addEventListener("click",buyButtonClicked);
 }
+
+
+// Remove Items From Cart 
+var removeCartButtons = document.getElementsByClassName("cart-remove");
+for (var i = 0; i < removeCartButtons.length; i++) {
+    var button = removeCartButtons[i];
+    button.addEventListener("click", removeCartItem);
+}
+
+
 //Buy Button
 function buyButtonClicked() {
   alert("Your Order is placed");
   var cartContent = document.querySelector(".cart-content");
   while (cartContent.hasChildNodes()) {
-      cartContent.removeChild(cartContent.firstChild);
+    cartContent.removeChild(cartContent.firstChild);
   }
   cartCounter = 0; // Reset the number of items in the cart to 0
-  updateCartCounter();
-  hideCartCount(); // Hide the badge after making a purchase or when the cart is empty
+  updateCartCountInBalloon(); // Call the new function here
   updatetotal();
+  updateCartCounter(); // Add this line to update the cart counter
+  hideCartCount(); // Hide the badge after making a purchase or when the cart is empty
 }
 
-// Remove Items From Cart 
-function removeCartItems(event) {
-  var buttonClicked = event.target;
-  buttonClicked.parentElement.remove();
-  cartCounter--;
-  updateCartCounter();
-  if (cartCounter === 0) {
-    hideCartCount(); 
-  }
-}
 
 
 //Quantity Changes
@@ -79,11 +85,15 @@ function quantityChanged(event) {
   }
 updatetotal();
 }
-
 let cartCounter = 0;
+
+function updateCartCounter() {
+  updateCartCountInBalloon();
+}
 
 // Add To Cart
 function addcartcliked(event) {
+  event.preventDefault();
   const button = event.target;
   const shopProducts = button.parentElement;
   const title = shopProducts.getElementsByClassName('product-title')[0].innerText;
@@ -93,52 +103,15 @@ function addcartcliked(event) {
   cartShopBox = addProductToCart(title, price, productImg);
   if (cartShopBox) {
     if (cartCounter === 0) {
-      showCartCount(); 
+      showCartCount();
     }
     cartCounter++;
-    updateCartCounter();
-  }
-  updatetotal();
-}
-
-
-
-
-// Open Cart
-carticon.onclick = () => {
-  cart.classList.add("active");
-  hideCartCount(); 
-  updateCartCounter();
-};
-
-// Close Cart
-closecart.onclick = () => {
-  cart.classList.remove("active");
-  showCartCount(); 
-};
-
-
-
-// Add the following functions
-
-function hideCartCount() {
-  const cartCount = document.querySelector('.cart-count');
-  if (cartCount) {
-    cartCount.style.display = 'none';
-  }
-}
-
-function showCartCount() {
-  const cartCount = document.querySelector('.cart-count');
-  if (cartCount) {
-    cartCount.style.display = 'inline-block';
+    updateCartCountInBalloon(); // Call the new function here
+    updatetotal();
   }
 }
 
 
-
-// Call the function to handle the initial cart count display
-handleInitialCartCount();
 
 // Add this function to hide the cart count
 function hideCartCount() {
@@ -157,27 +130,30 @@ function showCartCount() {
 }
 
 
-function updateCartCounter() {
-  const cartCounterSpan = document.getElementById('cart-counter');
-  if (cartCounterSpan) {
-    cartCounterSpan.innerText = cartCounter;
+function updateCartCountInBalloon() {
+  const cartCount = document.querySelector('.cart-count');
+  if (cartCount) {
+      cartCount.innerText = cartCounter;
 
-    // Add animation class (e.g., "bounce") for a brief moment
-    cartCounterSpan.classList.add('bounce');
-    setTimeout(() => {
-      cartCounterSpan.classList.remove('bounce');
-    }, 500); 
+      // Add animation class (e.g., "bounce") for a brief moment
+      cartCount.classList.add('bounce');
+      setTimeout(() => {
+          cartCount.classList.remove('bounce');
+      }, 500);
 
-    if (cartCounter === 0) {
-      hideCartCount();
-    }
+      if (cartCounter <= 0) {
+          hideCartCount();
+      }
   }
 }
 
 
+// Modify the updateCartCounter function to call updateCartCountInBalloon
+function updateCartCounter() {
+  updateCartCountInBalloon();
+}
 
-
-function addProductToCart(title, price, productImg) {
+function addProductToCart(title, price, productImg, size) {
   const newCartShopBox = document.createElement("div");
   newCartShopBox.classList.add("cart-box");
 
@@ -185,36 +161,55 @@ function addProductToCart(title, price, productImg) {
   const cartItemsNames = cartItems.getElementsByClassName("cart-product-title");
 
   for (let i = 0; i < cartItemsNames.length; i++) {
-    if (cartItemsNames[i].innerText == title) {
-      alert("You have already added this item to the cart");
-      return null;
-    }
+      if (cartItemsNames[i].innerText == title) {
+          alert("You have already added this item to the cart");
+          return null;
+      }
   }
 
   const cartBoxContent = `
-    <img src="${productImg}" alt="" class="cart-img">
-    <div class="detail-box">
-      <div class="cart-product-title">${title}</div>
-      <div class="cart-price">${price}</div>
-      <input type="number" value="1" class="cart-quantity">
-    </div>
-    <!-- Remove Cart -->
-    <i class='bx bxs-trash-alt cart-remove'></i>
+      <img src="${productImg}" alt="" class="cart-img">
+      <div class="detail-box">
+          <div class="cart-product-title">${title}</div>
+          <div class="cart-price">${price}</div>
+          <div class="size-buttons">
+              <button class="size-button" data-size="S">S</button>
+              <button class="size-button" data-size="M">M</button>
+              <button class="size-button" data-size="L">L</button>
+              <button class="size-button" data-size="XL">XL</button>
+              <button class="size-button" data-size="XXL">XXL</button>
+          </div>
+          <input type="number" value="1" class="cart-quantity">
+      </div>
+      <!-- Remove Cart -->
+      <i class='bx bxs-trash-alt cart-remove'></i>
   `;
 
   newCartShopBox.innerHTML = cartBoxContent;
   cartItems.append(newCartShopBox);
 
-  newCartShopBox
-    .getElementsByClassName("cart-remove")[0]
-    .addEventListener("click", removeCartItem);
+  const sizeButtons = newCartShopBox.querySelectorAll(".size-button");
+  sizeButtons.forEach(button => {
+      button.addEventListener("click", function () {
+          // Handle button click, you can customize this part
+          console.log(`Size ${button.dataset.size} clicked for ${title}`);
+      });
+  });
 
   newCartShopBox
-    .getElementsByClassName("cart-quantity")[0]
-    .addEventListener("change", quantityChanged);
+      .getElementsByClassName("cart-remove")[0]
+      .addEventListener("click", removeCartItem);
+
+  newCartShopBox
+      .getElementsByClassName("cart-quantity")[0]
+      .addEventListener("change", quantityChanged);
+
+  updateCartCountInBalloon();
 
   return newCartShopBox;
 }
+
+
 
 // Define removeCartItem function
 function removeCartItem(event) {

@@ -336,3 +336,16 @@ cursor: pointer;
     justify-content: space-between;
     padding: 20px 0;
 }
+
+/* Update the CSS styles for the size buttons */
+
+.size-buttons {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.size-button {
+    font-size: 0.7rem; /* Adjust the font size of the size buttons */
+    padding: 3px 6px; /* Adjust the padding of the size buttons */
+}
