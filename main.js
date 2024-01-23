@@ -209,8 +209,6 @@ function addProductToCart(title, price, productImg, size) {
   return newCartShopBox;
 }
 
-
-
 // Define removeCartItem function
 function removeCartItem(event) {
   const buttonClicked = event.target;

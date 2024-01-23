@@ -348,4 +348,13 @@ cursor: pointer;
 .size-button {
     font-size: 0.7rem; /* Adjust the font size of the size buttons */
     padding: 3px 6px; /* Adjust the padding of the size buttons */
+    background-color: #fd4646; /* Set the background color to #fd4646 */
+    color: #fff; /* Set the text color to white */
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.size-button:hover {
+    background-color: hsl(249, 50%, 40%); /* Darken the background color on hover */
 }
