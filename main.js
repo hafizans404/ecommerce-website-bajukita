@@ -41,7 +41,7 @@ for (var i = 0; i < quantityInputs.length; i++){
     input.addEventListener("change",quantityChanged);
 }
 // Add To Cart
-var addcart = document.getElementsByClassName('add-cart')
+var addcart = document.getElementsByClassName("add-cart")
 for (var i = 0; i < addcart.length; i++){
  var button = addcart[i]
  button.addEventListener("click",addcartcliked);   
